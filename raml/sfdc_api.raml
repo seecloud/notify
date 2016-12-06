@@ -2,7 +2,7 @@
 title:
 version: v1
 baseUrl: http://example.com/api
-/alert:
+/notify/sfdc:
   post:
     description: Create or update Case in SFDC
     responses:
@@ -11,16 +11,15 @@ baseUrl: http://example.com/api
       application/json:
         schema |
           {"$schema": “http://json-schema.org/schema”,
-            "type":"object"
-            "description": "Alert Data"
+            "type":"object",
+            "description": "Alert Data",
             "properties": {
-              "description":   {"type": "json"},
-              "alertId":       {"type": "string"},
-              "subject":       {"type": "string"},
-              "environment":   {"type": "string"},
-              "alertPriority": {"enum": ["060 Informational", "070 Unknown", "080 Warning", "090 Critical"]},
-              "alertHost":     {"type": "string"},
-              "alertService":  {"type": "string"}
+              "description": {"type": "object"},
+              "severity":    {"enum": ["OK", "INFO", "UNKNOWN", "WARNING", "CRITICAL", "DOWN"]},
+              "who":         {"type": "string"},
+              "what":        {"type": "string"}
+            },
+            "required": ["description",  "severity", "who", "what"]
           example: |
             alert: {
             {
@@ -39,12 +38,9 @@ baseUrl: http://example.com/api
                 "long_date_time": "Fri Dec 2 14:14:53 UTC 2016",
                 "service": "glance1"
               },
-              "alertId":       "a2X4C000000Cf0V--glance1--00-global-clusters-SIT12",
-              "subject":       "glance1 host=ic3-ctl01-scc1 host=ic3-ctl01-scc2 host=ic3-ctl01-scc",
-              "environment":   "a2X4C0000008OlZ"
-              "alertPriority": "090 Critical",
-              "alertHost":     "00-global-clusters-SIT12",
-              "alertService":  "glance1"
+              "severity": "INFO",
+              "who" :     "00-global-clusters-SIT12",
+              "what":     "glance1"
             },
           }
             "success": true
