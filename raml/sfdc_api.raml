@@ -11,16 +11,18 @@ baseUrl: http://example.com/api
       application/json:
         schema |
           {"$schema": “http://json-schema.org/schema”,
-            "type":"object"
-            "description": "Alert Data"
+            "type":"object",
+            "description": "Alert Data",
             "properties": {
-              "description":   {"type": "json"},
+              "description":   {"type": "object"},
               "alertId":       {"type": "string"},
               "subject":       {"type": "string"},
               "environment":   {"type": "string"},
               "alertPriority": {"enum": ["060 Informational", "070 Unknown", "080 Warning", "090 Critical"]},
               "alertHost":     {"type": "string"},
               "alertService":  {"type": "string"}
+            },
+            "required": ["description", "alertId", "subject", "environment", "alertPriority", "alertHost", "alertService"]
           example: |
             alert: {
             {
