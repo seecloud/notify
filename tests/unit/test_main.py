@@ -43,4 +43,4 @@ class MainTestCase(test.TestCase):
         self.assertEqual(1, len(resp))
         self.assertIn({"endpoint": "alert.send_alert",
                        "methods": ["OPTIONS", "POST"],
-                       "uri": "/api/v1/alert"}, resp)
+                       "uri": "/api/v1/notify/<backends>"}, resp)
