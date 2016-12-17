@@ -104,7 +104,6 @@ def send_to_salesforce(backend, driver, content):
         return(409, {"result": "fail"})
 
 
-
 def send_to_backend(backend, content):
     send_success = []
     send_error = []
@@ -177,8 +176,8 @@ def send_alert(backends):
         if backend in notify_backends_config:
             LOG.debug("Backend: {}".format(backend))
             resp_code, send_success, send_error = send_to_backend(
-                                                              backend=backend,
-                                                              content=content)
+                backend=backend,
+                content=content)
 
             LOG.debug("Backend: {}: Send result: Success: {}, "
                       "Errors: {}, Code: {}".format(backend,
@@ -198,15 +197,13 @@ def send_alert(backends):
             LOG.debug("Backend {} is not configured".format(backend))
             not_supported_backends.append(backend)
 
-
- 
     if not_supported_backends:
         result_error.append({"not_supported_backends":
                              not_supported_backends})
         resp_code = 409
 
     if (resp_code != 200):
-            err = True
+        err = True
 
     res['status'] = resp_code
 
