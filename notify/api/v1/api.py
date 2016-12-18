@@ -19,89 +19,23 @@ import logging
 import flask
 
 from notify import config
-from notify.drivers.salesforce import salesforce
+from notify.drivers.salesforce import driver as sf_driver
+
 
 LOG = logging.getLogger("api")
 LOG.setLevel(config.get_config().get("logging", {}).get("level", "INFO"))
-
-SFDC_CLIENTS = {}
 
 
 def json_f(x):
     return json.dumps(x, sort_keys=True, indent=4)
 
 
-def sfdc_client(backend, driver):
-    global SFDC_CLIENTS
-
-    cfg = config.get_config()['notify_backends'][backend][driver]
-    sfdc_config = cfg['properties']
-
-    if not (backend in SFDC_CLIENTS.keys()):
-        SFDC_CLIENTS[backend] = {}
-        sfdc_oauth2 = salesforce.OAuth2(
-            client_id=sfdc_config['client_id'],
-            client_secret=sfdc_config['client_secret'],
-            username=sfdc_config['username'],
-            password=sfdc_config['password'],
-            auth_url=sfdc_config['auth_url'],
-            organizationId=sfdc_config['organization_id'])
-
-        SFDC_CLIENTS[backend][driver] = salesforce.Client(sfdc_oauth2)
-
-    elif not (driver in SFDC_CLIENTS[backend].keys()):
-
-        sfdc_oauth2 = salesforce.OAuth2(
-            client_id=sfdc_config['client_id'],
-            client_secret=sfdc_config['client_secret'],
-            username=sfdc_config['username'],
-            password=sfdc_config['password'],
-            auth_url=sfdc_config['auth_url'],
-            organizationId=sfdc_config['organization_id'])
-
-        SFDC_CLIENTS[backend][driver] = salesforce.Client(sfdc_oauth2)
-
-    else:
-        pass
-
-
-bp = flask.Blueprint("alert", __name__)
-
-
-def send_to_email(backend, driver, content):
-    return(409, {"result": "not implemented"})
-
-
-def send_ok(backend, driver, content):
-    return(200, {"result": "success"})
-
-
-def send_fail(backend, driver, content):
-    return(409, {"result": "fail"})
+bp = flask.Blueprint("notify", __name__)
 
 
 def send_not_implemented(backend, driver, content):
     LOG.debug("Not implemented: backend={} driver={}".format(backend, driver))
-    return(409, {"result": "not implemented"})
-
-
-def send_to_salesforce(backend, driver, content):
-
-    cfg = config.get_config()['notify_backends'][backend][driver]
-    sfdc_config = cfg['properties']
-
-    sfdc_client(backend, driver)
-    if salesforce.validate_alert_data(alert=content):
-        try:
-            salesforce.send_to_sfdc(alert=content,
-                                    sfdc_client=SFDC_CLIENTS[backend][driver],
-                                    environment=sfdc_config['environment'])
-            return(200, {"result": "success"})
-        except Exception as e:
-            LOG.debug("Failed to send data: {}".format(e))
-            return(409, {"result": "fail"})
-    else:
-        return(409, {"result": "fail"})
+    return(409, {"result": "not implewmented"})
 
 
 def send_to_backend(backend, content):
@@ -118,25 +52,8 @@ def send_to_backend(backend, content):
         LOG.debug("Driver Config: {}".format(driver_config))
 
         if driver_config['type'] == 'salesforce':
-            resp_code, result = send_to_salesforce(backend=backend,
-                                                   driver=driver,
-                                                   content=content)
-
-        elif driver_config['type'] == 'email':
-            resp_code, result = send_to_email(backend=backend,
-                                              driver=driver,
-                                              content=content)
-
-        elif driver_config['type'] == 'ok':
-            resp_code, result = send_ok(backend=backend,
-                                        driver=driver,
-                                        content=content)
-
-        elif driver_config['type'] == 'fail':
-            resp_code, result = send_fail(backend=backend,
-                                          driver=driver,
-                                          content=content)
-
+            resp_code, result = sf_driver.send_to_salesforce(
+                backend=backend, driver=driver, content=content)
         else:
             resp_code, result = send_not_implemented(backend=backend,
                                                      driver=driver,
@@ -160,7 +77,7 @@ def send_to_backend(backend, content):
 
 
 @bp.route("/notify/<backends>", methods=["POST"])
-def send_alert(backends):
+def send_notification(backends):
 
     LOG.debug("Backends: {}".format(backends))
     res = {}
