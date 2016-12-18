@@ -17,7 +17,6 @@ import json
 import logging
 import xml.dom.minidom
 
-import jsonschema
 import jxmlease
 import requests
 from requests.packages.urllib3 import exceptions as urllib_exc
@@ -32,36 +31,8 @@ LOG = logging.getLogger("salesforce")
 LOG.setLevel(config.get_config().get("logging", {}).get("level", "INFO"))
 
 
-ALERT_SCHEMA = {
-    "type": "object",
-    "description": "Alert Data",
-    "properties": {
-        "description": {"type": "object",
-                        "properties": {
-                            "affected_hosts": {"type": "array"}
-                        }
-                        },
-        "severity":    {"enum": ["OK", "INFO", "UNKNOWN",
-                                 "WARNING", "CRITICAL", "DOWN"]},
-        "who":         {"type": "string"},
-        "what":        {"type": "string"}
-    },
-    "required": ["description", "severity", "who", "what"]
-}
-
-
 def json_f(x):
     return json.dumps(x, sort_keys=True, indent=4)
-
-
-def validate_alert_data(alert):
-    global ALERT_SCHEMA
-    try:
-        jsonschema.validate(alert, ALERT_SCHEMA)
-        return True
-    except (jsonschema.exceptions.ValidationError) as e:
-        LOG.debug("Failed to validate: {}".format(e))
-        return False
 
 
 def send_to_sfdc(alert, sfdc_client, environment=None):
@@ -80,8 +51,8 @@ def send_to_sfdc(alert, sfdc_client, environment=None):
     alertId = "{}--{}--{}".format(environment,
                                   alert["what"], alert["who"])
 
-    if "affected_hosts" in alert["description"]:
-        who = " ".join(alert["description"]["affected_hosts"])
+    if "affected_hosts" in alert:
+        who = " ".join(alert["affected_hosts"])
     else:
         who = alert["who"]
 
