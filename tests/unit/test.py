@@ -15,6 +15,7 @@
 
 import json
 
+import mock
 import testtools
 
 from notify import main
@@ -24,8 +25,13 @@ class TestCase(testtools.TestCase):
 
     def setUp(self):
         super(TestCase, self).setUp()
-        self.app = main.app.test_client()
+        self.client = main.app.test_client()
+        self.addCleanup(mock.patch.stopall)
 
     def get(self, *args, **kwargs):
-        rv = self.app.get(*args, **kwargs)
+        rv = self.client.get(*args, **kwargs)
+        return rv.status_code, json.loads(rv.data.decode())
+
+    def post(self, *args, **kwargs):
+        rv = self.client.post(*args, **kwargs)
         return rv.status_code, json.loads(rv.data.decode())
