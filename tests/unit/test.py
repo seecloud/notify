@@ -27,6 +27,11 @@ class TestCase(testtools.TestCase):
         super(TestCase, self).setUp()
         self.client = main.app.test_client()
         self.addCleanup(mock.patch.stopall)
+        self.payload = {"description": "This is a test data.",
+                        "region": "farfaraway",
+                        "severity": "INFO",
+                        "what": "Hooray!",
+                        "who": ["Alice", "Bob"]}
 
     def get(self, *args, **kwargs):
         rv = self.client.get(*args, **kwargs)

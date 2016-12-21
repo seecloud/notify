@@ -1,0 +1,39 @@
+{
+  "errors": 2,
+  "failed": 1,
+  "passed": 2,
+  "payload": {
+    "description": "This is a dummy alert, just for testing.",
+    "region": "farfaraway",
+    "severity": "INFO",
+    "what": "Hooray!",
+    "who": [
+      "Alice",
+      "Bob"
+    ]
+  },
+  "result": {
+    "dummy": {
+      "dummy_fail": {
+        "status": false
+      },
+      "dummy_pass": {
+        "status": true
+      }
+    },
+    "dummyerr": {
+      "dummy_err": {
+        "error": "Something has went wrong"
+      },
+      "dummy_explained_err": {
+        "error": "This message must appear in API response!"
+      }
+    },
+    "dummyrand": {
+      "dummy_random": {
+        "status": true
+      }
+    }
+  },
+  "total": 5
+}

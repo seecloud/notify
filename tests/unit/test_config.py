@@ -52,5 +52,5 @@ class ConfigTestCase(test.TestCase):
         self.assertEqual(config.DEFAULT_CONF, cfg)
 
     def test_get_config_cached(self):
-        config.CONF = 42
-        self.assertEqual(42, config.get_config())
+        with mock.patch.object(config, "CONF", 42):
+            self.assertEqual(42, config.get_config())
