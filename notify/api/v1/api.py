@@ -13,14 +13,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import json
+import hashlib
 import logging
 
 import flask
-import jsonschema
 
 from notify import config
-from notify.drivers import driver
+from notify import driver
 
 
 LOG = logging.getLogger("api")
@@ -30,110 +29,75 @@ LOG.setLevel(config.get_config().get("logging", {}).get("level", "INFO"))
 bp = flask.Blueprint("notify", __name__)
 
 
-PAYLOAD_SCHEMA = {
-    "type": "object",
-    "$schema": "http://json-schema.org/draft-04/schema",
-
-    "properties": {
-        "region": {
-            "type": "string"
-        },
-        "description": {
-            "type": "string"
-        },
-        "severity": {
-            "enum": ["OK", "INFO", "UNKNOWN", "WARNING", "CRITICAL", "DOWN"]
-        },
-        "who": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            },
-            "minItems": 1,
-            "uniqueItems": True
-        },
-        "what": {
-            "type": "string"
-        }
-    },
-    "required": ["description", "region", "severity", "who", "what"],
-    "additionalProperties": False
-}
-
-
-# NOTE(boris-42): Use here pool of resources
 CACHE = {}
+
+
+def make_hash(dct):
+    """Generate MD5 hash of given dict.
+
+    :param dct: dict to hash. There may be collisions
+                if it isn't flat (includes sub-dicts)
+    :returns: str MD5 hexdigest (32 chars)
+    """
+    str_repr = "|".join(["%s:%s" % x for x in sorted(dct.items())])
+    return hashlib.md5(str_repr.encode("utf-8")).hexdigest()
 
 
 @bp.route("/notify/<backends>", methods=["POST"])
 def send_notification(backends):
     global CACHE
 
+    backends = set(backends.split(","))
+    payload = flask.request.get_json(force=True, silent=True)
+
+    if not payload:
+        return flask.jsonify({"error": "Missed Payload"}), 400
+
     try:
-        content = json.loads(flask.request.form['payload'])
-        jsonschema.validate(content, PAYLOAD_SCHEMA)
-    except Exception as e:
-        return flask.jsonify({
-            "errors": True,
-            "status": 400,
-            "description": "Wrong payload: %s" % str(e),
-            "results": []
-        }), 400
+        driver.Driver.validate_payload(payload)
+    except ValueError as e:
+        return flask.jsonify({"error": "Bad Payload: {}".format(e)}), 400
 
-    conf = config.get_config()
-    resp = {
-        "errors": False,
-        "status": 200,
-        "description": "",
-        "results": []
-    }
+    notify_backends = config.get_config()["notify_backends"]
 
-    for backend in backends.split(","):
-        result = {
-            "backend": backend,
-            "status": 200,
-            "errors": False,
-            "description": "",
-            "results": []
-        }
-        if backend in conf["notify_backends"]:
-            for dr, driver_cfg in conf["notify_backends"][backend].items():
-                r = {
-                    "backend": backend,
-                    "driver": dr,
-                    "error": False,
-                    "status": 200
-                }
-                try:
+    unexpected = backends - set(notify_backends)
+    if unexpected:
+        mesg = "Unexpected backends: {}".format(", ".join(unexpected))
+        return flask.jsonify({"error": mesg}), 400
 
-                    driver_key = "%s.%s" % (backend, dr)
-                    if driver_key not in CACHE:
-                        # NOTE(boris-42): We should use here pool with locks
-                        CACHE[driver_key] = driver.get_driver(dr)(driver_cfg)
+    result = {"payload": payload, "result": {},
+              "total": 0, "passed": 0, "failed": 0, "errors": 0}
 
-                    # NOTE(boris-42): It would be smarter to call all drivers
-                    #                 notify in parallel
-                    CACHE[driver_key].notify(content)
+    for backend in backends:
+        for drv_name, drv_conf in notify_backends[backend].items():
 
-                except Exception as e:
-                    print(e)
-                    r["status"] = 500
-                    r["error"] = True
-                    resp["errors"] = True
-                    result["errors"] = True
-                    r["description"] = ("Something went wrong %s.%s"
-                                        % (backend, dr))
+            key = "{}.{}".format(drv_name, make_hash(drv_conf))
+            if key not in CACHE:
+                CACHE[key] = driver.get_driver(drv_name, drv_conf)
+            driver_ins = CACHE[key]
 
-                result["results"].append(r)
-        else:
-            result["status"] = 404
-            result["errors"] = True
-            resp["errors"] = True
-            result["description"] = "Backend %s not found" % backend
+            result["total"] += 1
+            if backend not in result["result"]:
+                result["result"][backend] = {}
 
-        resp["results"].append(result)
+            # TODO(maretskiy): run in parallel
+            try:
+                status = driver_ins.notify(payload)
 
-    return flask.jsonify(resp), resp["status"]
+                result["passed"] += status
+                result["failed"] += not status
+                result["result"][backend][drv_name] = {"status": status}
+            except driver.ExplainedError as e:
+                result["result"][backend][drv_name] = {"error": str(e)}
+                result["errors"] += 1
+            except Exception as e:
+                LOG.error(("Backend '{}' driver '{}' "
+                           "error: {}").format(backend, drv_name, e))
+                error = "Something has went wrong!"
+                result["result"][backend][drv_name] = {"error": error}
+                result["errors"] += 1
+
+    return flask.jsonify(result), 200
 
 
 def get_blueprints():

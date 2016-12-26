@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "type":"object",
+  "properties": {
+    "payload": {
+      "type":"object",
+      "properties": {
+        "region": {"type": "string"},
+        "description": {"type": "object"},
+        "severity": {"enum": ["OK", "INFO", "UNKNOWN", "WARNING", "CRITICAL", "DOWN"]},
+        "who": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "what": {"type": "string"},
+        "affected_hosts": {"type": "array"}
+      },
+      "required": ["description",  "severity", "who", "what"]
+    },
+    "total": {"type": "integer"},
+    "passed": {"type": "integer"},
+    "failed": {"type": "integer"},
+    "errors": {"type": "integer"},
+    "result": {
+      "type": "object",
+      "patternProperties": {
+        "\w+": {
+          "type": "object",
+          "properties": {
+            "anyOf": [
+              {"status": {"type": "boolean"}},
+              {"error": {"type": "string"}}
+            ]
+          }
+        }
+      }
+    }
+  }
+}

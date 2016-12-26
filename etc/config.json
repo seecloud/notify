@@ -10,15 +10,26 @@
     },
     "notify_backends": {
         "sf": {
-          "salesforce": {
-            "atuh_url": "https://somedomain.my.salesforce.com",
-            "username": "babalbalba",
-            "password": "abablabal",
-            "environment": "what?",
-            "client_id":  "...",
-            "client_secret": "...",
-            "organization_id": "...."
-          }
-       }
+            "sfdc": {
+                "atuh_url": "https://somedomain.my.salesforce.com",
+                "username": "foo_username",
+                "password": "foo_pa55w0rd",
+                "organization_id": "mycorp",
+                "environment": "fooenv",
+                "client_id":  "",
+                "client_secret": ""
+            }
+        },
+        "dummy": {
+            "dummy_pass": {},
+            "dummy_fail": {}
+        },
+        "dummyrand": {
+            "dummy_random": {"probability": 0.5}
+        },
+        "dummyerr": {
+            "dummy_err": {},
+            "dummy_err_explained": {}
+        }
     }
 }

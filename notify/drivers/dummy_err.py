@@ -1,4 +1,3 @@
-
 # Copyright 2016: Mirantis Inc.
 # All Rights Reserved.
 #
@@ -14,23 +13,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import importlib
-import logging
+from notify import driver
 
 
-def get_driver(driver_type):
-    try:
-        return importlib.import_module("." + driver_type + ".driver",
-                                       "notify.drivers").Driver
-    except ImportError:
-        logging.error("Could not load driver for '{}'".format(driver_type))
-        raise
+class Driver(driver.Driver):
+    """Simulate unexpected error by raising ValueError."""
 
-
-class Driver(object):
-
-    def __init__(self, config):
-        self.config = config
-
-    def notify(self):
-        raise NotImplemented()
+    def notify(self, payload):
+        raise ValueError("This error message is for logging only!")

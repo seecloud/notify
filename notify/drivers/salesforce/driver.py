@@ -13,7 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from notify.drivers import driver
+from notify import driver as base
 from notify.drivers.salesforce import salesforce
 
 
@@ -30,7 +30,7 @@ def sfdc_client(sfdc_config):
     )
 
 
-class Driver(driver.Driver):
+class Driver(base.Driver):
 
     def __init__(self, config):
         super(Driver, self).__init__(config)
