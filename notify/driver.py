@@ -68,10 +68,7 @@ class Driver(object):
             "severity": {
                 "enum": ["OK", "INFO", "UNKNOWN", "WARNING",
                          "CRITICAL", "DOWN"]},
-            "who": {"type": "array",
-                    "items": {"type": "string"},
-                    "minItems": 1,
-                    "uniqueItems": True},
+            "who": {"type": "string"},
             "what": {"type": "string"},
             "affected_hosts": {"type": "array"}
         },
@@ -112,12 +109,11 @@ class Driver(object):
         self.config = config
 
     def notify(self, payload):
-        """Send notification alert.
+        """Send notification payload.
 
         This method must be overriden by specific driver implementation.
 
-        :param payload: alert data
-        :type payload: dict, validated api.PAYLOAD_SCHEMA
+        :param payload: payload dict, valid for PAYLOAD_SCHEMA
         :returns: status whether notification is successful
         :rtype: bool
         """

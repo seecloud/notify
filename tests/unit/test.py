@@ -31,7 +31,7 @@ class TestCase(testtools.TestCase):
                         "region": "farfaraway",
                         "severity": "INFO",
                         "what": "Hooray!",
-                        "who": ["Alice", "Bob"]}
+                        "who": "John Doe"}
 
     def get(self, *args, **kwargs):
         rv = self.client.get(*args, **kwargs)

@@ -32,7 +32,8 @@ DEFAULT_CONF = {
         "type": "elastic",
         "connection": [{"host": "127.0.0.1", "port": 9200}]
     },
-    "notify_backends": {}
+    "notify_backends": {},
+    "logging": {"level": "INFO"}
 }
 
 CONF_SCHEMA = {
@@ -69,23 +70,13 @@ CONF_SCHEMA = {
         "notify_backends": {
             "type": "object",
             "properties": {
-                "*": {
-                    "type": "object",
-                    "properties": {
-                        "salesforce": {
-                            "type": "object",
-                            "properties": {
-                                "atuh_url": {"type": "string"},
-                                "username": {"type": "string"},
-                                "password": {"type": "string"},
-                                "environment": {"type": "string"},
-                                "client_id":  {"type": "string"},
-                                "client_secret": {"type": "string"},
-                                "organization_id": {"type": "string"}
-                            }
-                        }
-                    }
-                }
+                "*": {"type": "object"}
+            }
+        },
+        "logging": {
+            "type": "object",
+            "properties": {
+                "level": {"type": "string"}
             }
         }
     },
