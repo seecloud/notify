@@ -1,0 +1,29 @@
+---
+{%- if elasticsearch.hosts is defined and elasticsearch.hosts|length > 0 %}
+backend:
+  type: elastic
+  connection:
+    {%- for host in elasticsearch.hosts %}
+    - host: {{ host.host }}
+      port: {{ host.port }}
+    {%- endfor -%}
+{% endif %}
+
+notify_backends:
+  sf:
+    sfdc:
+      auth_url:
+      username:
+      password:
+      organization_id:
+      client_id:
+      client_secret:
+  dummy:
+    dummy_pass:
+    dummy_fail:
+  dummyrand:
+    dummy_random:
+      probability: {{ notify.notify_backends.dummyrand.probability }}
+  dummyerr:
+    dummy_err:
+    dummy_err_explained:

@@ -1,0 +1,13 @@
+FROM {{ image_spec("base-tools") }}
+MAINTAINER {{ maintainer }}
+
+{{ copy_sources("seecloud/notify", "/notify") }}
+
+RUN apt-get update && apt-get install --yes wget python-dev build-essential
+
+RUN wget https://bootstrap.pypa.io/get-pip.py && \
+  python get-pip.py && \
+  rm -f get-pip.py
+
+RUN pip install -r /notify/requirements.txt \
+    && pip install --upgrade /notify

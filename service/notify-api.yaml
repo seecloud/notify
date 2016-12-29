@@ -1,0 +1,29 @@
+dsl_version: 0.1.0
+service:
+  name: notify-api
+  ports:
+    - {{ notify.port }}
+  containers:
+    - name: notify-api
+      image: notify
+      probes:
+        readiness:
+          type: "httpGet"
+          port: {{ notify.port.cont }}
+          path: "/"
+        liveness:
+          command: "true"
+          type: "exec"
+      daemon:
+        command: gunicorn
+                 --name notify-api
+                 --workers {{ notify.wsgi.workers }}
+                 --bind 0.0.0.0:{{ notify.port.cont }}
+                 notify.main:app
+        files:
+          - notify.conf
+
+files:
+  notify.conf:
+    path: /etc/notify/config.json
+    content: notify.conf.j2

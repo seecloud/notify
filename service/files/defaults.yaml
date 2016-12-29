@@ -1,0 +1,15 @@
+configs:
+  notify:
+    port:
+      cont: 5000
+    debug: false
+    wsgi:
+      workers: 4
+    notify_backends:
+      dummyrand:
+        probability: 0.5
+    regions: []
+sources:
+  seecloud/notify:
+    git_url: http://github.com/seecloud/notify
+    git_ref: master
