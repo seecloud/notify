@@ -28,4 +28,4 @@ fi
 
 set -x
 
-curl -XPOST -H 'Content-Type: application/json' localhost:5000/api/v1/notify/sf -d "${BODY}"
+curl -XPOST -H 'Content-Type: application/json' http://localhost:5000/api/v1/notify/sf -d "${BODY}"

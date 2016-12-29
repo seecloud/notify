@@ -80,7 +80,7 @@ CONF_SCHEMA = {
             }
         }
     },
-    "required": ["flask", "backend", "notify_backends"]
+    "required": ["flask", "notify_backends"]
 }
 
 
