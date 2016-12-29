@@ -91,8 +91,8 @@ def send_notification(backends):
                 result["result"][backend][drv_name] = {"error": str(e)}
                 result["errors"] += 1
             except Exception as e:
-                LOG.error(("Backend '{}' driver '{}' "
-                           "error: {}").format(backend, drv_name, e))
+                LOG.error("Backend '{}' driver '{}': {}: {}".format(
+                    backend, drv_name, type(e), e))
                 error = "Something has went wrong!"
                 result["result"][backend][drv_name] = {"error": error}
                 result["errors"] += 1

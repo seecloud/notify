@@ -11,13 +11,12 @@
     "notify_backends": {
         "sf": {
             "sfdc": {
-                "atuh_url": "https://somedomain.my.salesforce.com",
-                "username": "foo_username",
-                "password": "foo_pa55w0rd",
-                "organization_id": "mycorp",
-                "environment": "fooenv",
-                "client_id":  "",
-                "client_secret": ""
+                "auth_url": "https://somedomain.my.salesforce.com",
+                "username": "johndoe",
+                "password": "pa55w0rd",
+                "organization_id": "somecorp1234556789",
+                "client_id":  "client42",
+                "client_secret": "755cl13n753cr37"
             }
         },
         "dummy": {

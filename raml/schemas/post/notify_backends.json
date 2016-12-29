@@ -8,10 +8,7 @@
         "region": {"type": "string"},
         "description": {"type": "object"},
         "severity": {"enum": ["OK", "INFO", "UNKNOWN", "WARNING", "CRITICAL", "DOWN"]},
-        "who": {
-          "type": "array",
-          "items": {"type": "string"}
-        },
+        "who": {"type": "string"},
         "what": {"type": "string"},
         "affected_hosts": {"type": "array"}
       },

@@ -3,14 +3,11 @@
   "failed": 1,
   "passed": 2,
   "payload": {
-    "description": "This is a dummy alert, just for testing.",
+    "description": "This is a dummy payload, just for testing.",
     "region": "farfaraway",
     "severity": "INFO",
     "what": "Hooray!",
-    "who": [
-      "Alice",
-      "Bob"
-    ]
+    "who": "John Doe"
   },
   "result": {
     "dummy": {
