@@ -144,7 +144,7 @@ Let's use `CURL <https://curl.haxx.se/>`_ command line utility for convenience.
 Dummy drivers
 ~~~~~~~~~~~~~
 
-Dummy drivers are always available and are for use immediately,
+Dummy drivers are always available and are ready for use immediately,
 however they do not actually send alerts.
 
 These drivers are suitable for demonstrations and smoke testing.
