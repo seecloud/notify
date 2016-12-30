@@ -157,8 +157,8 @@ class ClientTestCase(test.TestCase):
     @mock.patch("notify.drivers.sfdc.requests")
     @mock.patch("notify.drivers.sfdc.LOG")
     def test__request_json_raises(self, mock_log, mock_requests):
-        mock_resp = mock.Mock(status_code=200, text="")
-        mock_resp.json.sode_effect = ValueError
+        mock_resp = mock.Mock(status_code=200, text="some response body")
+        mock_resp.json.side_effect = ValueError
         mock_requests.request.return_value = mock_resp
 
         client = sfdc.Client(self.auth)
