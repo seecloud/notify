@@ -29,6 +29,12 @@
         "dummyerr": {
             "dummy_err": {},
             "dummy_err_explained": {}
+        },
+        "mail": {
+            "mail": {
+                "sender_domain": "seecloud-notify.example.org",
+                "recipients": ["yourname@mail.example.org"]
+            }
         }
     }
 }
