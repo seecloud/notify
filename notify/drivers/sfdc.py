@@ -20,14 +20,13 @@ from xml.dom import minidom
 import requests
 from requests.packages.urllib3 import exceptions as urllib_exc
 
-from notify import config
 from notify import driver
 
 requests.packages.urllib3.disable_warnings(urllib_exc.InsecureRequestWarning)
 
 
-LOG = logging.getLogger("sfdc")
-LOG.setLevel(config.get_config().get("logging", {}).get("level", "INFO"))
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.INFO)
 
 
 class OAuth2(object):
